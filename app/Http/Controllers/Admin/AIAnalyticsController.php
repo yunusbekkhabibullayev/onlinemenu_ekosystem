@@ -137,16 +137,36 @@ class AIAnalyticsController extends Controller
             ->value('categories.name');
 
         $prompt = "Siz professional O'zbek milliy restorani maslahatchisisiz. Mijoz '{$foodItem->name}' ({$baseCategory}) tanladi.\n" .
-                  "Quyidagi mahsulotlardan mantiqan mos 3 ta ID tanlang:\n" .
-                  "Qoidalari:\n" .
-                  "1. AGAR 'PALOV/OSH', 'MANTI' yoki 'ASOSIY TAOMLAR' bo'lsa: Shakarob, Ayron, Non yoki Yaxna ichimlik.\n" .
-                  "2. AGAR 'SHO'RVALAR' bo'lsa: Ayron, Chakka, Tuzlamalar va Non.\n" .
-                  "3. AGAR 'KABOBLAR' bo'lsa: Bitta yaxna ichimlik va 2 ta boshqa turdagi shashlik.\n" .
-                  "4. AGAR 'SALATLAR' bo'lsa: Faqat yaxna ichimliklar (Pepsi, Limonad, Kompot).\n" .
-                  "5. UMUMIY QOIDA: Har doim kamida bitta yaxna ichimlik bo'lsin. Choy va shirinlik taklif qilmang.\n" .
-                  "6. '{$foodItem->name}' ning o'zini qaytarmang.\n\n" .
+                  "Quyidagi mahsulotlardan mantiqan mos 3 ta ID tanlang:\n\n" .
+                  "QOIDALAR:\n" .
+                  "1. AGAR KATEGORIYA 'Asosiy taomlar' bo'lsa (Palov, Manti, Lag'mon, Dimlama, Norin va h.k.):\n" .
+                  "   - 1-2 ta SALATLAR kategoriyasidan tanlang (Achichuk, Olivye, Yunoncha kabi)\n" .
+                  "   - 1 ta ICHIMLIKLAR kategoriyasidan tanlang (Ayron, Kompot, Limonad kabi)\n\n" .
+                  "2. AGAR KATEGORIYA 'Sho'rvalar' bo'lsa:\n" .
+                  "   - 1 ta SALATLAR kategoriyasidan tanlang\n" .
+                  "   - 1 ta ICHIMLIKLAR kategoriyasidan tanlang\n" .
+                  "   - 1 ta ASOSIY TAOMLAR yoki boshqa taomdang tanlang\n\n" .
+                  "3. AGAR KATEGORIYA 'Kaboblar' bo'lsa:\n" .
+                  "   - 1 ta SALATLAR kategoriyasidan tanlang (Achichuk kabob bilan ajoyib)\n" .
+                  "   - 1 ta boshqa KABOBLAR kategoriyasidan tanlang\n" .
+                  "   - 1 ta ICHIMLIKLAR kategoriyasidan tanlang\n\n" .
+                  "4. AGAR KATEGORIYA 'Salatlar' bo'lsa:\n" .
+                  "   - 1 ta ASOSIY TAOMLAR kategoriyasidan tanlang\n" .
+                  "   - 1 ta ICHIMLIKLAR kategoriyasidan tanlang\n" .
+                  "   - 1 ta KABOBLAR yoki boshqa taomdang tanlang\n\n" .
+                  "5. AGAR KATEGORIYA 'Ichimliklar' bo'lsa:\n" .
+                  "   - 1 ta ASOSIY TAOMLAR kategoriyasidan tanlang\n" .
+                  "   - 1 ta SALATLAR kategoriyasidan tanlang\n" .
+                  "   - 1 ta SHIRINLIKLAR kategoriyasidan tanlang\n\n" .
+                  "6. AGAR KATEGORIYA 'Shirinliklar' bo'lsa:\n" .
+                  "   - 1 ta ICHIMLIKLAR kategoriyasidan tanlang (choy yaxshi mos keladi)\n" .
+                  "   - 2 ta boshqa SHIRINLIKLAR kategoriyasidan tanlang\n\n" .
+                  "MUHIM QOIDALAR:\n" .
+                  "- '{$foodItem->name}' ning o'zini hech qachon qaytarmang\n" .
+                  "- Har xil kategoriyalardan tanlang, bir kategoriyadan ko'pi bilan 2 ta\n" .
+                  "- Eng ko'p sotilgan mahsulotlarga ustunlik bering\n\n" .
                   "Menyu:\n{$menuText}\n\n" .
-                  "Javob format: [ID1, ID2, ID3]";
+                  "Javob format (faqat raqamlar): [ID1, ID2, ID3]";
 
         try {
             $response = Http::withOptions(['verify' => false])->withHeaders([
